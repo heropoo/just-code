@@ -1,0 +1,20 @@
+{
+    "name": "ttt/composer-demo",
+    "description": "hhha",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "symfony/http-foundation": "^3.3"
+    },
+    "autoload":{
+        "psr-4":{
+            "":"src/"
+        }
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    }
+}
