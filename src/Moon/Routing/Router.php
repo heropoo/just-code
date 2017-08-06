@@ -9,6 +9,8 @@
 namespace Moon\Routing;
 
 
+use Symfony\Component\HttpFoundation\Request;
+
 class Router
 {
     /**
@@ -18,6 +20,8 @@ class Router
      */
     public static $verbs = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
 
-    //public function
+    public function matchRequest(Request $request){
+
+    }
 
 }

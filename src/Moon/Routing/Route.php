@@ -10,7 +10,6 @@ namespace Moon\Routing;
 
 /**
  * Class Route
- * @method Route setMethods(array $methods)
  * @method Route setOptions(array $options)
  * @method Route setPath(string $path)
  * @method Route setCallback(callable $action)
@@ -25,12 +24,17 @@ class Route
     /**
      * @var string $path
      */
-    protected $path;
+    protected $path = '/';
 
     /**
      * @var array $methods
      */
     protected $methods = [];
+
+    /**
+     * @var string
+     */
+    protected $condition = '';
 
     /**
      * @var Callable $callback
@@ -42,12 +46,22 @@ class Route
      */
     protected $options = [];
 
+    /**
+     * @param array|string $methods
+     * @return $this
+     */
+    public function setMethods($methods){
+        $this->methods = array_map('strtoupper', (array)$methods);
+        return $this;
+    }
+
     public function __construct(array $attributes = [])
     {
         if(!empty($attributes)){
             foreach($attributes as $attribute => $value){
                 if (property_exists($this, $attribute)) {
-                    $this->$attribute = $value;
+                    $method = 'set'.ucfirst($attribute);
+                    call_user_func([$this, $method], $value);
                 }
             }
         }
