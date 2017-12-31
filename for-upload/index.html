@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Upload your avatar</title>
+</head>
+<body>
+<div>
+    <img style="cursor: pointer;" src="uploads/a.png" alt="点击上传" width="150" title="点击上传" class="upload-img" data-id="img">
+    <input type="hidden" name="image" value="" class="upload-img-input" data-id="img">
+    <input style="display: none" type="file" accept="image/gif,image/jpeg,image/jpg,image/png,image/bmp" name="file" id="file_img" data-id="img" onchange="upload_image(this);">
+</div>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    //点击图片的时候 触发隐藏的input:file的点击事件
+    $(".upload-img").click(function(){
+        var id = $(this).data('id');
+        var file = document.getElementById('file_' + id);
+        file.click();
+    });
+    function upload_image(pic_file) {
+        var id = $(pic_file).data('id');
+        var input = $("input.upload-img-input[data-id="+id+"]");    //找到相应的隐藏域
+        var pic = $("img.upload-img[data-id="+id+"]");              //找到相应的预览图片
+
+        var file = pic_file.files[0];
+        if (file.size > 2 * 1024 * 1024) {   //设置限制文件大小 不大于2MB
+            alert('上传文件不能大于2M!');
+            return false;
+        }
+
+        var fd = new FormData();    //使用formData对象
+        fd.append("pic_file", file);
+        //fd.append("name", name);  //可以添加其他字段，比如有些框为了安全加的csrf_token
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("POST", 'upload_file.php');    //这里是后端处理的地址
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                var obj = eval('(' + xhr.responseText + ')');   //把json字符串转换成js对象
+                if (obj.ret == 200) {   //上传成功
+                    var pic_url = obj.data.url; //显示预览图
+                    input.val(pic_url);         //把地址放到隐藏域
+                    pic.attr('src', pic_url);
+                } else {
+                    alert(obj.msg);
+                }
+            } else {
+                alert('上传失败，请稍候再试');
+            }
+        };
+        xhr.send(fd);
+    }
+</script>
+</body>
+</html>
