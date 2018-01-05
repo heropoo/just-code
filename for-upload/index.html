@@ -45,7 +45,7 @@
                 if (obj.ret == 200) {   //上传成功
                     var pic_url = obj.data.url; //显示预览图
                     input.val(pic_url);         //把地址放到隐藏域
-                    pic.attr('src', pic_url);
+                    pic.attr('src', pic_url+'?v='+Math.random());
                 } else {
                     alert(obj.msg);
                 }
