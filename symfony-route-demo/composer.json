@@ -1,6 +1,6 @@
 {
-    "name": "ttt/composer-demo",
-    "description": "hhha",
+    "name": "ttt/symfony-route-demo",
+    "description": "how to use symfony route",
     "type": "project",
     "license": "MIT",
     "require": {
