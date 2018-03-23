@@ -3,11 +3,11 @@
  * Created by PhpStorm.
  * User: ttt
  * Date: 2018/2/9
- * Time: 18:39
+ * Time: 18:40
  */
-namespace Moon\Db;
+namespace Test\Db;
 
-class Connection
+class Model
 {
 
 }

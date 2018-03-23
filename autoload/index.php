@@ -9,13 +9,13 @@
 require_once 'ClassLoader.php';
 
 $loader = new Psr4AutoloaderClass();
-$loader->addNamespace('Moon\\', './Moon');
+$loader->addNamespace('Test\\', './Moon');
 $loader->register();
 
 
-$connection = new \Moon\Db\Connection();
+$connection = new \Test\Db\Connection();
 
-$model = new \Moon\Db\Model();
+$model = new \Test\Db\Model();
 
 
 var_dump($connection,$model);
