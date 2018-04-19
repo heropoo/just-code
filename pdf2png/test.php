@@ -26,7 +26,7 @@ function pdf2png($pdf, $path, $page = -1)
     }
     $im = new Imagick();
     $im->setResolution(120, 120);
-    $im->setCompressionQuality(10);
+    $im->setCompressionQuality(100);
     if ($page == -1)
         $im->readImage($pdf);
     else
@@ -34,6 +34,31 @@ function pdf2png($pdf, $path, $page = -1)
     foreach ($im as $Key => $Var) {
         $Var->setImageFormat('png');
         $filename = $path . "/" . md5($Key . time()) . '.png';
+        if ($Var->writeImage($filename) == true) {
+            $Return[] = $filename;
+        }
+    }
+    return $Return;
+}
+
+function pdf2JPEG($pdf, $path, $page = -1)
+{
+    if (!extension_loaded('imagick')) {
+        return false;
+    }
+    if (!file_exists($pdf)) {
+        return false;
+    }
+    $im = new Imagick();
+    $im->setResolution(120, 120);
+    $im->setCompressionQuality(100);
+    if ($page == -1)
+        $im->readImage($pdf);
+    else
+        $im->readImage($pdf . "[" . $page . "]");
+    foreach ($im as $Key => $Var) {
+        $Var->setImageFormat('jpeg');
+        $filename = $path . "/" . md5($Key . time()) . '.jpeg';
         if ($Var->writeImage($filename) == true) {
             $Return[] = $filename;
         }
