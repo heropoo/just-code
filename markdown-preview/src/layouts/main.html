@@ -1017,16 +1017,36 @@ body .markdown-body
 </style>
 </head>
 <body>
-    <div class="markdown-body">
-        {{content}}
-    </div>
-<script>
+<div class="markdown-body">
+    {{content}}
+</div>
+<script type="text/javascript">
     window.onload = function(){
-        var h1 = document.getElementsByTagName('h1')[0];
-        document.title = h1.textContent || h1.innerText;
-        var a_list = document.getElementsByTagName("a");
-        for(var i=0; i< a_list.length; i++){
-            a_list[i].href = a_list[i].href.toLowerCase();
+        if(document.getElementsByTagName('h1').length > 0){
+            var h1 = document.getElementsByTagName('h1')[0];
+            document.title = h1.textContent || h1.innerText;
+            /*var a_list = document.getElementsByTagName("a");
+            for(var i=0; i< a_list.length; i++){
+                a_list[i].href = a_list[i].href.toLowerCase();
+            }*/
+        }else{
+            var h2 = document.getElementsByTagName('h2')[0];
+            document.title = h2.textContent || h2.innerText;
+            h2.setAttribute('id', encodeURI(document.title));
+
+            //generate menu
+            var title = document.title.match(/[a-zA-Z]+/g)[0];
+            var menu = '';
+            menu += '['+document.title+']('+title+'.html)\n';
+
+            var h3_list = document.getElementsByTagName("h3");
+            for(var i=0; i< h3_list.length; i++){
+                var text =  h3_list[i].textContent || h3_list[i].innerText;
+                h3_list[i].setAttribute('id', encodeURI(text));
+
+                menu +='    * ['+text+']('+title+'.html#'+encodeURI(text)+')\n';
+            }
+            console.log(menu);
         }
     };
 </script>

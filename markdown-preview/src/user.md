@@ -164,7 +164,7 @@
     | new_pwd | string | 新密码 |
 
 * 返回结果
-```
+```json
 {
     "code": 0,
     "message": "修改成功",

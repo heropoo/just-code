@@ -1,5 +1,5 @@
 {
     "require": {
-        "michelf/php-markdown": "^1.8"
+        "cebe/markdown": "^1.2"
     }
 }
