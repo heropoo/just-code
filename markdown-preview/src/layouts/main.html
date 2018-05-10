@@ -1,4 +1,11 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><style>body {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <style>
+        body {
     max-width: 980px;
     border: 1px solid #ddd;
     outline: 1300px solid #fff;
@@ -1025,16 +1032,12 @@ body .markdown-body
         if(document.getElementsByTagName('h1').length > 0){
             var h1 = document.getElementsByTagName('h1')[0];
             document.title = h1.textContent || h1.innerText;
-            /*var a_list = document.getElementsByTagName("a");
-            for(var i=0; i< a_list.length; i++){
-                a_list[i].href = a_list[i].href.toLowerCase();
-            }*/
         }else{
             var h2 = document.getElementsByTagName('h2')[0];
             document.title = h2.textContent || h2.innerText;
             h2.setAttribute('id', encodeURI(document.title));
 
-            //generate menu
+            /*//generate menu
             var title = document.title.match(/[a-zA-Z]+/g)[0];
             var menu = '';
             menu += '['+document.title+']('+title+'.html)\n';
@@ -1046,7 +1049,7 @@ body .markdown-body
 
                 menu +='    * ['+text+']('+title+'.html#'+encodeURI(text)+')\n';
             }
-            console.log(menu);
+            console.log(menu);*/
         }
     };
 </script>
