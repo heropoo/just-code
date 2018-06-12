@@ -14,10 +14,9 @@ $page = new \Moon\Pagination($count);
 
 $offset = $page->getOffset();
 $limit = $page->getLimit();
+
 $limitString = $page->getLimitString();
-//echo "where limit $limit offset $offset";
-//echo '<hr>';
-//echo $page->getHtml();
+
 ?><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -38,7 +37,7 @@ $limitString = $page->getLimitString();
     <![endif]-->
 </head>
 <body>
-<div>
+<div class="container">
     <?= $page->getBootstrapHtml()?>
 </div>
 
