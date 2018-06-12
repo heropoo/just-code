@@ -10,7 +10,7 @@ require 'Page.php';
 
 $count = 200;
 
-$page = new \Moon\Page($count);
+$page = new \Moon\Pagination($count);
 
 $offset = $page->getOffset();
 $limit = $page->getLimit();

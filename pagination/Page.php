@@ -8,7 +8,7 @@ namespace Moon;
  * @date 2015-01-19
  * @lastModified 2018-06-12
  */
-class Page
+class Pagination
 {
     protected $totalRows;   //总数据条数
     protected $pageSize;   //页大小
