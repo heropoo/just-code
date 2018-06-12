@@ -6,6 +6,7 @@ namespace Moon;
  * 分页类
  * @author TTT
  * @date 2015-01-19
+ * @lastModified 2018-06-12
  */
 class Page
 {
@@ -89,14 +90,14 @@ class Page
         $beforePage = (($this->page - 1) > 0) ? ($this->page - 1) : 1;   //上一页
         $nextPage = (($this->page + 1) < $this->totalPage) ? ($this->page + 1) : $this->totalPage; //下一页
 
-        $pageHtml = '<div class="page">';
+        $pageHtml = '<div class="pagination">';
         $pageHtml .= '<span class="pageIndex">第' . $this->page . '/' . $this->totalPage . '页</span> ';
         $pageHtml .= '<span class="totalRows">共' . $this->totalRows . '条</span> ';
         if ($this->page <= 1) {
             $pageHtml .= '<span class="firstPage">首页</span> ';
         } else {
             $pageHtml .= '<a class="firstPage" href="' . $this->url . '">首页</a> ';
-            $pageHtml .= '<a class="beforePage" href="' . $this->url . $beforePage . '"><上一页</a> ';
+            $pageHtml .= '<a class="beforePage" href="' . $this->url . $beforePage . '"><<上一页</a> ';
         }
 
         $half = ceil($this->showPages);
@@ -136,9 +137,70 @@ class Page
         if ($this->page == $this->totalPage) {
             $pageHtml .= '<span class="lastPage">末页</span>';
         } else {
-            $pageHtml .= '<a class="nextPage" href="' . $this->url . $nextPage . '">下一页></a> ';
+            $pageHtml .= '<a class="nextPage" href="' . $this->url . $nextPage . '">下一页>></a> ';
             $pageHtml .= '<a class="lastPage" href="' . $this->url . $this->totalPage . '">末页</a>';
         }
+        $pageHtml.= '</div>';
+        return $pageHtml;
+    }
+
+    /**
+     * 获取分页输出的HTML代码
+     */
+    public function getBootstrapHtml()
+    {
+        $beforePage = (($this->page - 1) > 0) ? ($this->page - 1) : 1;   //上一页
+        $nextPage = (($this->page + 1) < $this->totalPage) ? ($this->page + 1) : $this->totalPage; //下一页
+
+        $pageHtml = '<ul class="pagination">';
+        if ($this->page == 1) {
+            $pageHtml .= '<li class="disabled"><span>首页</span></li> ';
+        } else {
+            $pageHtml .= '<li><a href="' . $this->url . '">首页</a></li>';
+            $pageHtml .= '<li><a href="' . $this->url . $beforePage . '"><<上一页</a></li> ';
+        }
+
+        $half = ceil($this->showPages);
+        $left = $this->page - $half > 0 ? $this->page - $half : 0;
+        $right = $this->page + $half < $this->totalPage ? $this->page + $half : $this->totalPage;
+
+        if($left && ($this->page - $half) > 1){
+            $pageHtml .= '<li><a href="' . $this->url . '1">1</a></li> ';
+            if($this->page - $half > 2){
+                $pageHtml .= '<li class="disabled"><span>...</span></li> ';
+            }
+        }
+
+        for ($i = 1; $i <= $this->totalPage; $i++) {
+            if($i < $left){
+                continue;
+            }
+            if($i > $right){
+                continue;
+            }
+
+            if ($this->page == $i) {
+                $pageHtml .= '<li class="active"><span>' . $i . '</span></li> ';
+            } else {
+                $pageHtml .= '<li><a href="' . $this->url . $i . '">' . $i . '</a></li> ';
+            }
+        }
+
+        if($right && ($this->page + $half) < $this->totalPage){
+            if($this->page + $half + 1 < $this->totalPage){
+                $pageHtml .= '<li><span>...</span></li> ';
+            }
+            $pageHtml .= '<li><a class="pageItem" href="' . $this->url .$this->totalPage.'">'.$this->totalPage.'</a></li> ';
+
+        }
+
+        if ($this->page == $this->totalPage) {
+            $pageHtml .= '<li class="disabled"><span>末页</span></li>';
+        } else {
+            $pageHtml .= '<li><a class="nextPage" href="' . $this->url . $nextPage . '">下一页>></a></li> ';
+            $pageHtml .= '<li><a class="lastPage" href="' . $this->url . $this->totalPage . '">末页</a></li>';
+        }
+        $pageHtml.= '</ul>';
         return $pageHtml;
     }
 }
