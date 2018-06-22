@@ -6,7 +6,7 @@
  * Time: 10:26
  */
 
-require 'Page.php';
+require 'Pagination.php';
 
 $count = 200;
 
