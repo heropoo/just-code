@@ -23,6 +23,7 @@ while (true) {
 	$headers = [
 		'Content-Type: text/html; charset=utf-8',
 		'Server: nginx/1.12.2',	//冒充nginx
+		'Date: '
 		//set cookie
 		'Set-Cookie: testcookie=中文; path=/; domain='.$host.'; expires='.gmstrftime("%A, %d-%b-%Y %H:%M:%S GMT",time()+9600), 
 	];
