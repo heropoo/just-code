@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Search</title>
+    <style>
+		*{margin: 0;padding: 0}
+        html,body{width: 100%;height: 100%}
+        body{overflow: hidden;}
+    	.search-form{height: 3rem; overflow: hidden;}
+    	.search-form input{line-height: 2rem;margin: 0.5rem;width: 20rem;}
+    	.search-form button{line-height: 2rem;margin: 0.5rem;width: 3rem;}
+    	.search-form select {height: 2rem;}
+    </style>
+</head>
+<body>
+<div id="header">
+	<form action="" class="search-form" id="search-form">
+		<input type="text" name="kw" value="" id="kw" />
+		<select name="engine" id="engine">
+			<option value="https://www.baidu.com/s?wd=">百度</option>
+			<option value="https://cn.bing.com/search?q=">必应</option>
+			<option value="https://www.so.com/s?q=">360</option>
+			<option value="https://www.sogou.com/web?query=">搜狗</option>
+			<option value="google">谷歌</option>
+		</select>
+		<button type="submit">搜索</button>			
+	</form>
+</div>
+<iframe src="http://baidu.com" frameborder="0" width="100%" height="100%" id="iframe"></iframe>
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script>
+	$(function(){
+        var url = decodeURI(window.location.hash).substring(1);
+        if(url.length > 0){
+            $("#iframe").attr("src", url);     
+        }
+    });
+	$('#search-form').submit(function(){
+		var kw = $("#kw").val();
+		var engine = $("#engine").val();
+		if(engine == 'google'){
+			var url = 'https://www.google.com/search?q='+kw;
+			window.open(url);
+			return false;
+		}
+		var url = engine+kw;
+		$("#iframe").attr("src", url);
+		var current_url = '#'+url;
+	    window.history.pushState({}, 'Search', current_url);
+		return false;
+	});
+</script>
+</body>
+</html>
