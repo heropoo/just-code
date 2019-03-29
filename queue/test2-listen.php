@@ -11,14 +11,14 @@ require 'RedisQueue.php';
 
 $client = new Predis\Client([
         'scheme' => 'tcp',
-        'host'   => '116.62.205.240',
+        'host'   => '127.0.0.1',
         'port'   => 6379
     ],
     [
         'replication' => 'sentinel',
         'service' => 'master',
         'parameters' => [
-            'password' => 'Test86315993',
+            'password' => '123456',
             'database' => 10,
         ],
     ]
@@ -26,11 +26,21 @@ $client = new Predis\Client([
 
 $queue = new RedisQueue($client);
 
-var_dump($queue->pop('list_1'));
 
-$queue->push('list_1', '1');
-$queue->push('list_1', '2');
-$queue->push('list_1', '3');
+while (true){
+    $res = $queue->receive('list_1');
+    if(empty($res)){
+        sleep(1);
+    }
+    var_dump($res);
+}
+//var_dump($queue->receive('list_1'));
+//
+//$res = $queue->push('list_1', '1---', 10);
+//$res = $queue->push('list_1', '2---');
+
+//$queue->push('list_1', '2');
+//$queue->push('list_1', '3');
 
 //var_dump($queue->pop('list_1'));
 //var_dump($queue->pop('list_1'));
