@@ -56,8 +56,6 @@ class RedisQueue{
                 });
             }
             $this->releaseLock($key.':lock');
-        }else{
-            echo 'in lock'.PHP_EOL;
         }
         return $this->client->lpop($key);
     }
