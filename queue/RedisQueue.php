@@ -43,32 +43,30 @@ class RedisQueue{
     public function receive($key){
         if($this->getLock($key.':lock')){
             $keys = $this->client->zrangebyscore($key.':zset',0, time());
-            if(empty($keys)) {
-                return NULL;
+            if(!empty($keys)) {
+                $message_datas = $this->client->hmget($key.':hlist', $keys);
+                $this->client->transaction(function($tx) use ($key, $keys, $message_datas){
+                    /** @var \Predis\Client $tx */
+                    foreach ($message_datas as $i => $message_data){
+                        $tx->rpush($key, $message_data);
+                        $hash_key = $keys[$i];
+                        $tx->hdel($key.':hlist', $hash_key);
+                        $tx->zrem($key.':zset', $hash_key);
+                    }
+                });
             }
-            $message_datas = $this->client->hmget($key.':hlist', $keys);
-            $this->client->transaction(function($tx) use ($key, $keys, $message_datas){
-                /** @var \Predis\Client $tx */
-                foreach ($message_datas as $i => $message_data){
-                    $tx->rpush($key, $message_data);
-                    $hash_key = $keys[$i];
-                    $tx->hdel($key.':hlist', $hash_key);
-                    $tx->zrem($key.':zset', $hash_key);
-                }
-            });
             $this->releaseLock($key.':lock');
+        }else{
+            echo 'in lock'.PHP_EOL;
         }
         return $this->client->lpop($key);
     }
 
-    //todo 待优化
     public function getLock($key){
         $ret = true;
-        while( ($val = $this->client->incr($key)) != 1) {
+        if($this->client->incr($key) != 1){
             $ret = false;
-            break;
         }
-
         $ttl = $this->client->ttl($key);
         if($ttl == -1) {    //forever
             $this->client->expire($key, 60);

@@ -18,7 +18,7 @@ $client = new Predis\Client([
         'replication' => 'sentinel',
         'service' => 'master',
         'parameters' => [
-            'password' => '123456',
+            'password' => null,
             'database' => 10,
         ],
     ]

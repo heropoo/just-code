@@ -18,7 +18,7 @@ $client = new Predis\Client([
         'replication' => 'sentinel',
         'service' => 'master',
         'parameters' => [
-            'password' => '123456',
+            'password' => null,
             'database' => 10,
         ],
     ]
@@ -28,7 +28,7 @@ $queue = new RedisQueue($client);
 
 //var_dump($queue->receive('list_1'));
 
-$res = $queue->push('list_1', '1---', 10);
+$res = $queue->push('list_1', '1--- '.date('H:i:s'), 5);
 $res = $queue->push('list_1', '2---');
 
 //$queue->push('list_1', '2');
