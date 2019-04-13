@@ -173,16 +173,16 @@ curl 'localhost:9200/accounts/person/_search'  -d '
   }
 }'
 */
-$res = $curl->request('/accounts/person/_search?pretty=true', 'GET', '{
-  "query": {
-    "bool": {
-      "must": [
-        { "match": { "desc": "数据库" } },
-        { "match": { "desc": "1" } }
-      ]
-    }
-  }
-}');
-var_dump($res);
+//$res = $curl->request('/accounts/person/_search?pretty=true', 'GET', '{
+//  "query": {
+//    "bool": {
+//      "must": [
+//        { "match": { "desc": "数据库" } },
+//        { "match": { "desc": "1" } }
+//      ]
+//    }
+//  }
+//}');
+//var_dump($res);
 
 
