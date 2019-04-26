@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>upload preview img</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+     <form id="myForm" method="post" enctype="multipart/form-data">
+          <img src="images/plus.jpeg"  style="width: 200px" alt="点击上传" title="点击上传" class="upload-img" data-id="avatar">
+     </form>
+<script src="js/jquery.min.js"></script>
+<script>
+    $(function () {
+        $(".upload-img").each(function(){
+            var id = $(this).data('id');
+            var tpl = '<input style="display: none" type="file" accept="image/jpeg,image/jpg,image/png,image/bmp" name="file_'+id+'" data-id="'+id+'" onchange="upload_image(this);">';
+            $(this).after(tpl);
+        });
+
+        $(".upload-img").click(function(){
+            var id = $(this).data('id');
+            var file = $("input:file[data-id='"+id+"']");
+            file.trigger('click');
+        });
+
+        $("#myForm").submit(function(){
+            var thisForm = $(this)[0];
+            $.ajax({
+                url: "",
+                type: "POST",
+                data: new FormData(thisForm),
+                processData: false,
+                contentType: false,
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 0){
+                        alert('提交成功');
+                    }else{
+                        alert(res.msg);
+                    }
+                }
+            });
+            return false;
+        });
+    });
+
+    function upload_image(pic_file) {
+        var id = $(pic_file).data('id');
+        var pic = $("img.upload-img[data-id="+id+"]");              //找到相应的预览图片
+
+        var file = pic_file.files[0];
+        if (file.size > 2 * 1024 * 1024) {   //设置限制文件大小 不大于2MB
+            alert('上传文件不能大于2M!');
+            return false;
+        }
+
+        var img_url = window.URL.createObjectURL(file);
+        pic.attr('src', img_url);
+        pic.on('load', function(){
+            URL.revokeObjectURL(img_url);
+        });
+        return true;
+    }
+</script>
+</body>
+</html>
