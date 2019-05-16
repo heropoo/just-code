@@ -1,0 +1,11 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    },
+    "autoload": {
+        "App\\": "src/"
+    },
+    "autoload-dev": {
+        "Test\\": "tests/"
+    }
+}
