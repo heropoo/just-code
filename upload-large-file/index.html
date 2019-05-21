@@ -32,6 +32,7 @@
             </div>
         </div>
 <!--        <span class="help-block">40% 完成</span>-->
+<!--        <pre id=log></pre>-->
 
         <p id="upload-info"></p>
 
@@ -44,7 +45,50 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
 <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+<script src="spark-md5.min.js"></script>
 <script>
+    // var log=document.getElementById("log");
+    var file_md5;
+    $("#upload-file").on("change", function(){
+        var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
+            //file = this.files[0],
+            file = $(this)[0].files[0],
+            chunkSize = 2097152, // read in chunks of 2MB
+            chunks = Math.ceil(file.size / chunkSize),
+            currentChunk = 0,
+            spark = new SparkMD5.ArrayBuffer(),
+            frOnload = function(e){
+                file_md5 = '';
+
+               // log.innerHTML+="\nread chunk number "+parseInt(currentChunk+1)+" of "+chunks;
+                spark.append(e.target.result); // append array buffer
+                currentChunk++;
+                if (currentChunk < chunks) {
+                    loadNext();
+                }else{
+                    // log.innerHTML+="\nfinished loading :)\n\ncomputed hash:\n"+spark.end()+"\n\nyou can select another file now!\n";
+                    file_md5 = spark.end();
+                    console.log(file_md5);
+                }
+            },
+            frOnerror = function () {
+                // log.innerHTML+="\noops, something went wrong.";
+                alert('读取文件失败');
+                file_md5 = '';
+            };
+        function loadNext() {
+            var fileReader = new FileReader();
+            fileReader.onload = frOnload;
+            fileReader.onerror = frOnerror;
+            var start = currentChunk * chunkSize,
+                end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
+            fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+        }
+        // log.style.display="inline-block";
+        // log.innerHTML="file name: "+file.name+" ("+file.size.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ',')+" bytes)\n";
+        loadNext();
+    });
+
     $("#upload-btn").click(function(){
         if($("#upload-file")[0].files.length == 0){
             alert('请选择需要上传的文件');
@@ -59,7 +103,14 @@
         //return false;
 
         let file = $("#upload-file")[0].files[0];
-        let name = Math.random()+file.name; //todo md5 file
+        //let name = Math.random()+file.name; //todo md5 file
+        let name;
+        if(file_md5){
+            name = file_md5+':'+file.name;
+        }else{
+            name = Math.random()+':'+file.name;
+        }
+
         let size = file.size;
 
         let success = 0;
@@ -78,6 +129,7 @@
             form.append('size', end - start);
             form.append('name', name);
             form.append('total', shardCount);
+            form.append('md5', file_md5);
             form.append('index', i);
 
             $.ajax({

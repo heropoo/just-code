@@ -8,6 +8,7 @@ $name = $_POST['name'];
 $total = $_POST['total'];
 $index = $_POST['index'];
 $size = $_POST['size'];
+$file_md5 = $_POST['md5'];
 
 $dst_file = $path . '/'.$name.'-'.$total.':'.$index;
 
@@ -19,7 +20,9 @@ if ($file["error"] > 0) {
         file_put_contents($dst_file.'.info', $size);
         if(mergeFile($path . '/'.$name, $total)){
             echoJson(200, 'ok', [
-                'url'=> 'uploads/'.$name
+                'url'=> 'uploads/'.$name,
+                'md5'=> md5_file($path . '/'.$name),
+                'md5_check'=> md5_file($path . '/'.$name) === $file_md5
             ]);
         }else{
             echoJson(201, 'shard ok');
