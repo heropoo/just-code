@@ -8,9 +8,18 @@ $name = $_POST['name'];
 $total = $_POST['total'];
 $index = $_POST['index'];
 $size = $_POST['size'];
-$file_md5 = $_POST['md5'];
+$md5 = $_POST['md5'];
 
 $dst_file = $path . '/'.$name.'-'.$total.':'.$index;
+
+if(file_exists($path.'/'.$name) && md5_file($path.'/'.$name) === $md5){
+    // 文件已存在，妙传
+    echoJson(210, 'ok', [
+        'url'=> 'uploads/'.$name,
+        'md5'=> md5_file($path . '/'.$name),
+        'md5_check'=> md5_file($path . '/'.$name) === $md5
+    ]);
+}
 
 if ($file["error"] > 0) {
     echoJson(400, $file["error"]);
@@ -22,7 +31,7 @@ if ($file["error"] > 0) {
             echoJson(200, 'ok', [
                 'url'=> 'uploads/'.$name,
                 'md5'=> md5_file($path . '/'.$name),
-                'md5_check'=> md5_file($path . '/'.$name) === $file_md5
+                'md5_check'=> md5_file($path . '/'.$name) === $md5
             ]);
         }else{
             echoJson(201, 'shard ok');
@@ -45,6 +54,11 @@ function mergeFile($name, $total){
     }
 
     if($already){
+        @unlink($name);
+        if(file_exists($name.'.lock')){
+            return false;
+        }
+        touch($name.'.lock');
         $file = fopen($name, 'a+');
         for ($i = 0; $i < $total; $i++){
             $shardFile = fopen($name.'-'.$total.':'.$i, 'r');
@@ -55,6 +69,7 @@ function mergeFile($name, $total){
             unlink($name.'-'.$total.':'.$i.'.info');
         }
         fclose($file);
+        unlink($name.'.lock');
 
         return true;
     }

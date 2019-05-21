@@ -31,8 +31,7 @@
                 <span class="sr-only">0% 完成</span>
             </div>
         </div>
-<!--        <span class="help-block">40% 完成</span>-->
-<!--        <pre id=log></pre>-->
+<!--        <span class="help-block">0% 完成</span>-->
 
         <p id="upload-info"></p>
 
@@ -48,9 +47,9 @@
 <script src="spark-md5.min.js"></script>
 <script>
     // var log=document.getElementById("log");
-    var file_md5;
+    let file_md5;
     $("#upload-file").on("change", function(){
-        var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
+        let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
             //file = this.files[0],
             file = $(this)[0].files[0],
             chunkSize = 2097152, // read in chunks of 2MB
@@ -77,16 +76,21 @@
                 file_md5 = '';
             };
         function loadNext() {
-            var fileReader = new FileReader();
+            let fileReader = new FileReader();
             fileReader.onload = frOnload;
             fileReader.onerror = frOnerror;
-            var start = currentChunk * chunkSize,
+            let start = currentChunk * chunkSize,
                 end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
             fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
         }
         // log.style.display="inline-block";
         // log.innerHTML="file name: "+file.name+" ("+file.size.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ',')+" bytes)\n";
         loadNext();
+
+        $("#upload-info").html('');
+        $("#progress .progress-bar-info").css('width', '0%');
+        $("#progress .sr-only").text('0% 完成');
+        $("#progress").addClass('active');
     });
 
     $("#upload-btn").click(function(){
@@ -96,7 +100,6 @@
         }
 
         $("#upload-info").html('');
-
         $("#progress .progress-bar-info").css('width', '0%');
         $("#progress .sr-only").text('0% 完成');
         $("#progress").addClass('active');
@@ -119,8 +122,14 @@
         const shardSize = 1024 * 1024; // 1MB
         let shardCount = Math.ceil(size/shardSize);
 
+        $("#upload-info").data('completed', '');
 
         for(let i = 0; i < shardCount; i++){
+
+            if($("#upload-info").data('completed') == 'completed'){
+                break;
+            }
+
             let start = i * shardSize,
                 end = Math.min(size, start + shardSize);
 
@@ -136,7 +145,7 @@
                 url: 'upload.php',
                 type: "POST",
                 data: form,
-                //async: false,
+               // async: false,     //是否异步上传，默认true
                 processData: false, //很重要，告诉jquery不要对form进行处理
                 contentType: false, //很重要，指定为false才能形成正确的Content-Type
                 success: function (res) {
@@ -149,22 +158,22 @@
                         $("#progress .progress-bar-info").css('width', percent+'%');
                         $("#progress .sr-only").text(percent+'% 完成');
 
-                        //callback(success, shardCount);
-                        //$("#upload-info").append('<p>shard '+i+' upload success</p>');
                     }else if(res.code == 200){
-                        ++success;
-
-                        percent = success/shardCount * 100;
-                        console.log(percent);
-
-                        $("#progress .progress-bar-info").css('width', percent+'%');
-                        $("#progress .sr-only").text(percent+'% 完成');
-
+                        $("#progress .progress-bar-info").css('width', '100%');
+                        $("#progress .sr-only").text('100% 完成');
                         $("#upload-info").append('<a target="_blank" href="'+res.data.url+'">File url</a>');
-
+                        $("#upload-info").data('completed', 'completed');
+                        $("#progress").removeClass('active');
+                    }else if(res.code == 210){
+                        $("#progress .progress-bar-info").css('width', '100%');
+                        $("#progress .sr-only").text('100% 完成');
+                        if($("#upload-info").data('completed') != 'completed'){
+                            $("#upload-info").data('completed', 'completed');
+                            $("#upload-info").append('<a target="_blank" href="'+res.data.url+'">秒传！ File url</a>');
+                        }
                         $("#progress").removeClass('active');
                     } else{
-                        //alert(res.msg);
+                        alert(res.msg);
                         $("#upload-info").append('<p>shard '+i+' upload failed</p>');
                         $("#progress").removeClass('active');
                     }
