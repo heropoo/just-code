@@ -8,3 +8,4 @@
 * [从php代码注释中生存Api文档](./generator-api-doc-from-code)
 * [自动补全model类的字段属性注释](./fill-model-properties-comment)
 * [上传大文件](./upload-large-file)
+* [js视频截图](./video-screenshot)
