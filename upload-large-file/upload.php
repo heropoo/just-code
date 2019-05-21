@@ -16,7 +16,8 @@ if ($file["error"] > 0) {
 } else {
     $res = move_uploaded_file($file['tmp_name'], $dst_file);
     if($res){
-        if(mergeFile($path . '/'.$name, $total, $index, $size)){
+        file_put_contents($dst_file.'.info', $size);
+        if(mergeFile($path . '/'.$name, $total)){
             echoJson(200, 'ok', [
                 'url'=> 'uploads/'.$name
             ]);
@@ -28,19 +29,17 @@ if ($file["error"] > 0) {
     }
 }
 
-function mergeFile($name, $total, $index, $size){
-    //$lock_data = @file_get_contents($name.'.lock') or [];
-    //$lock_data['_'.$index] = $size;
+function mergeFile($name, $total){
     $already = true;
     for ($i = 0; $i < $total; $i++){
-        if(!file_exists($name.'-'.$total.':'.$i)){
+        if(!file_exists($name.'-'.$total.':'.$i.'.info') || !file_exists($name.'-'.$total.':'.$i)){;
+            $already = false;
+            break;
+        }else if(filesize($name.'-'.$total.':'.$i) != file_get_contents($name.'-'.$total.':'.$i.'.info')){
             $already = false;
             break;
         }
     }
-
-    //var_dump($name.'.lock', $lock_data);exit;
-    //file_put_contents($name.'.lock', json_encode($lock_data));
 
     if($already){
         $file = fopen($name, 'a+');
@@ -50,6 +49,7 @@ function mergeFile($name, $total, $index, $size){
             fwrite($file, $shardData);
             fclose($shardFile);
             unlink($name.'-'.$total.':'.$i);
+            unlink($name.'-'.$total.':'.$i.'.info');
         }
         fclose($file);
 

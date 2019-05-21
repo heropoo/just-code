@@ -52,7 +52,11 @@
         }
 
         $("#upload-info").html('');
+
+        $("#progress .progress-bar-info").css('width', '0%');
+        $("#progress .sr-only").text('0% 完成');
         $("#progress").addClass('active');
+        //return false;
 
         let file = $("#upload-file")[0].files[0];
         let name = Math.random()+file.name; //todo md5 file
@@ -61,7 +65,7 @@
         let success = 0;
         let percent = 0;
 
-        const shardSize = 100 * 1024; // 1MB
+        const shardSize = 1024 * 1024; // 1MB
         let shardCount = Math.ceil(size/shardSize);
 
 
@@ -104,9 +108,6 @@
                         $("#progress .progress-bar-info").css('width', percent+'%');
                         $("#progress .sr-only").text(percent+'% 完成');
 
-                        //callback(success, shardCount);
-                        //$("#upload-info").append('<p>shard '+i+' upload success</p>');
-
                         $("#upload-info").append('<a target="_blank" href="'+res.data.url+'">File url</a>');
 
                         $("#progress").removeClass('active');
@@ -119,12 +120,6 @@
                 }
             });
         }
-
-        // function callback(success, shardCount){
-        //     if(success == shardCount){
-        //         alert('上传成功');
-        //     }
-        // }
     });
 </script>
 </body>
