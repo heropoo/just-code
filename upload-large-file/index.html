@@ -46,6 +46,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
 <script src="spark-md5.min.js"></script>
 <script>
+
     // var log=document.getElementById("log");
     let file_md5;
     $("#upload-file").on("change", function(){
@@ -58,6 +59,7 @@
             spark = new SparkMD5.ArrayBuffer(),
             frOnload = function(e){
                 file_md5 = '';
+                $("#upload-info").text('正在计算文件hash');
 
                // log.innerHTML+="\nread chunk number "+parseInt(currentChunk+1)+" of "+chunks;
                 spark.append(e.target.result); // append array buffer
@@ -67,13 +69,15 @@
                 }else{
                     // log.innerHTML+="\nfinished loading :)\n\ncomputed hash:\n"+spark.end()+"\n\nyou can select another file now!\n";
                     file_md5 = spark.end();
-                    console.log(file_md5);
+                    // console.log(file_md5);
+                    $("#upload-info").text('文件hash为：'+file_md5);
                 }
             },
             frOnerror = function () {
                 // log.innerHTML+="\noops, something went wrong.";
                 alert('读取文件失败');
                 file_md5 = '';
+                $("#upload-info").text('正在计算文件hash失败');
             };
         function loadNext() {
             let fileReader = new FileReader();
@@ -85,12 +89,13 @@
         }
         // log.style.display="inline-block";
         // log.innerHTML="file name: "+file.name+" ("+file.size.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ',')+" bytes)\n";
-        loadNext();
 
         $("#upload-info").html('');
         $("#progress .progress-bar-info").css('width', '0%');
         $("#progress .sr-only").text('0% 完成');
         $("#progress").addClass('active');
+
+        loadNext();
     });
 
     $("#upload-btn").click(function(){
@@ -99,20 +104,43 @@
             return false;
         }
 
-        $("#upload-info").html('');
+        $("#upload-info").html('上传中...');
         $("#progress .progress-bar-info").css('width', '0%');
         $("#progress .sr-only").text('0% 完成');
         $("#progress").addClass('active');
-        //return false;
 
         let file = $("#upload-file")[0].files[0];
-        //let name = Math.random()+file.name; //todo md5 file
+        //let name = Math.random()+file.name;
         let name;
         if(file_md5){
             name = file_md5+':'+file.name;
+
+            //尝试秒传
+            $.ajax({
+                url: 'upload.php?type=miao',
+                type: "POST",
+                data: {md5: file_md5, name: name},
+                success: function (res) {
+                    if(res.code == 200){
+                        $("#progress .progress-bar-info").css('width', '100%');
+                        $("#progress .sr-only").text('100% 完成');
+                        $("#upload-info").html('秒传！上传完成！<a target="_blank" href="'+res.data.url+'">查看文件</a>');
+                        $("#upload-info").data('completed', 'completed');
+                        $("#progress").removeClass('active');
+                    }else{
+                        upload_file(file, name, file_md5);
+                    }
+                }
+            });
         }else{
             name = Math.random()+':'+file.name;
+            upload_file(file, name, '');
         }
+    });
+
+    function upload_file(file, name, file_md5){
+
+        $("#upload-info").text('上传中...');
 
         let size = file.size;
 
@@ -126,9 +154,9 @@
 
         for(let i = 0; i < shardCount; i++){
 
-            if($("#upload-info").data('completed') == 'completed'){
-                break;
-            }
+            // if($("#upload-info").data('completed') == 'completed'){
+            //     break;
+            // }
 
             let start = i * shardSize,
                 end = Math.min(size, start + shardSize);
@@ -142,14 +170,14 @@
             form.append('index', i);
 
             $.ajax({
-                url: 'upload.php',
+                url: 'upload.php?type=shard',
                 type: "POST",
                 data: form,
                // async: false,     //是否异步上传，默认true
                 processData: false, //很重要，告诉jquery不要对form进行处理
                 contentType: false, //很重要，指定为false才能形成正确的Content-Type
                 success: function (res) {
-                    if(res.code == 201){
+                    if(res.code == 200){
                         ++success;
 
                         percent = success/shardCount * 100;
@@ -158,30 +186,53 @@
                         $("#progress .progress-bar-info").css('width', percent+'%');
                         $("#progress .sr-only").text(percent+'% 完成');
 
-                    }else if(res.code == 200){
-                        $("#progress .progress-bar-info").css('width', '100%');
-                        $("#progress .sr-only").text('100% 完成');
-                        $("#upload-info").append('<a target="_blank" href="'+res.data.url+'">File url</a>');
-                        $("#upload-info").data('completed', 'completed');
-                        $("#progress").removeClass('active');
-                    }else if(res.code == 210){
-                        $("#progress .progress-bar-info").css('width', '100%');
-                        $("#progress .sr-only").text('100% 完成');
-                        if($("#upload-info").data('completed') != 'completed'){
-                            $("#upload-info").data('completed', 'completed');
-                            $("#upload-info").append('<a target="_blank" href="'+res.data.url+'">秒传！ File url</a>');
+                        if(success == shardCount){  // last process completed
+                            $("#upload-info").text('合并文件中...');
+                            $.ajax({
+                                url: 'upload.php?type=merge',
+                                type: "POST",
+                                data: {name: name, size: size, total: shardCount, md5: file_md5},
+                                success: function (res) {
+                                    if(res.code == 200){
+                                        $("#progress .progress-bar-info").css('width', '100%');
+                                        $("#progress .sr-only").text('100% 完成');
+                                        $("#upload-info").html('上传完成！<a target="_blank" href="'+res.data.url+'">查看文件</a>');
+                                        $("#upload-info").data('completed', 'completed');
+                                        $("#progress").removeClass('active');
+                                    }else{
+                                        alert(res.msg);
+                                        //$("#upload-info").append('<p>shard '+i+' upload failed</p>');
+                                        $("#progress").removeClass('active');
+                                    }
+                                }
+                            });
                         }
-                        $("#progress").removeClass('active');
-                    } else{
+                    }
+                    // else if(res.code == 200){
+                    //     $("#progress .progress-bar-info").css('width', '100%');
+                    //     $("#progress .sr-only").text('100% 完成');
+                    //     $("#upload-info").append('<a target="_blank" href="'+res.data.url+'">File url</a>');
+                    //     $("#upload-info").data('completed', 'completed');
+                    //     $("#progress").removeClass('active');
+                    // }else if(res.code == 210){
+                    //     $("#progress .progress-bar-info").css('width', '100%');
+                    //     $("#progress .sr-only").text('100% 完成');
+                    //     if($("#upload-info").data('completed') != 'completed'){
+                    //         $("#upload-info").data('completed', 'completed');
+                    //         $("#upload-info").append('<a target="_blank" href="'+res.data.url+'">秒传！ File url</a>');
+                    //     }
+                    //     $("#progress").removeClass('active');
+                    // }
+                    else{
                         alert(res.msg);
-                        $("#upload-info").append('<p>shard '+i+' upload failed</p>');
+                        $("#upload-info").html('<p>shard '+i+' upload failed</p>');
                         $("#progress").removeClass('active');
                     }
                     console.log(res);
                 }
             });
         }
-    });
+    }
 </script>
 </body>
 </html>
