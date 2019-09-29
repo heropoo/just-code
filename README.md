@@ -1,5 +1,6 @@
 # just-code
 
+* [一个简单的使用`predis/predis`的redis-cache组件](./redis-cache)
 * [一个ajax异步上传 for-upload](./for-upload)
 * [symfony-routing组件使用示例 symfony-routing-demo](./symfony-route-demo)
 * [自动加载 autoload](./autoload)
