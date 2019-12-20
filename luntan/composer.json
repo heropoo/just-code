@@ -1,0 +1,17 @@
+{
+    "name": "luntan",
+    "type": "project",
+    "license": "MIT",
+    "authors": [],
+    "require": {
+        "heropoo/db": "^0.4.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "files": [
+            "app/helpers.php"
+        ]
+    }
+}
