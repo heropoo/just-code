@@ -6,10 +6,10 @@
  * Time: 18:41
  */
 
-require_once 'ClassLoader.php';
+require_once 'Psr4AutoloaderClass.php';
 
 $loader = new Psr4AutoloaderClass();
-$loader->addNamespace('Test\\', './Moon');
+$loader->addNamespace('Test\\', './Test');
 $loader->register();
 
 
