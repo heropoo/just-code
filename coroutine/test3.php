@@ -4,25 +4,28 @@ require_once 'Task.php';
 require_once 'Scheduler.php';
 require_once 'SystemCall.php';
 
-function newTask(Generator $coroutine) {
+function newTask(Generator $coroutine)
+{
     return new SystemCall(
-        function(Task $task, Scheduler $scheduler) use ($coroutine) {
+        function (Task $task, Scheduler $scheduler) use ($coroutine) {
             $task->setSendValue($scheduler->newTask($coroutine));
             $scheduler->schedule($task);
         }
     );
 }
 
-function killTask($tid) {
+function killTask($tid)
+{
     return new SystemCall(
-        function(Task $task, Scheduler $scheduler) use ($tid) {
+        function (Task $task, Scheduler $scheduler) use ($tid) {
             $task->setSendValue($scheduler->killTask($tid));
             $scheduler->schedule($task);
         }
     );
 }
 
-function childTask() {
+function childTask()
+{
     $tid = (yield getTaskId());
     while (true) {
         echo "Child task $tid still alive!\n";
@@ -30,14 +33,16 @@ function childTask() {
     }
 }
 
-function getTaskId() {
-    return new SystemCall(function(Task $task, Scheduler $scheduler) {
+function getTaskId()
+{
+    return new SystemCall(function (Task $task, Scheduler $scheduler) {
         $task->setSendValue($task->getTaskId());
         $scheduler->schedule($task);
     });
 }
 
-function task() {
+function task()
+{
     $tid = (yield getTaskId());
     $childTid = (yield newTask(childTask()));
 

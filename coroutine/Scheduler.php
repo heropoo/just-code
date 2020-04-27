@@ -1,17 +1,22 @@
 <?php
 
-
+/**
+ * 调度器
+ * Class Scheduler
+ */
 class Scheduler
 {
     protected $maxTaskId = 0;
     protected $taskMap = []; // taskId => task
     protected $taskQueue;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->taskQueue = new SplQueue();
     }
 
-    public function newTask(Generator $coroutine) {
+    public function newTask(Generator $coroutine)
+    {
         $tid = ++$this->maxTaskId;
         $task = new Task($tid, $coroutine);
         $this->taskMap[$tid] = $task;
@@ -19,15 +24,18 @@ class Scheduler
         return $tid;
     }
 
-    public function schedule(Task $task) {
+    public function schedule(Task $task)
+    {
         $this->taskQueue->enqueue($task);
     }
 
-    public function run() {
+    public function run()
+    {
         while (!$this->taskQueue->isEmpty()) {
+            /** @var Task $task */
             $task = $this->taskQueue->dequeue();
             $retval = $task->run();
-
+            var_dump($retval);
             if ($retval instanceof SystemCall) {
                 $retval($task, $this);
                 continue;
@@ -41,7 +49,8 @@ class Scheduler
         }
     }
 
-    public function killTask($tid) {
+    public function killTask($tid)
+    {
         if (!isset($this->taskMap[$tid])) {
             return false;
         }
