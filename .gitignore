@@ -4,3 +4,4 @@ composer.lock
 sftp-config.json
 *.bk
 .DS_Store
+*.log
