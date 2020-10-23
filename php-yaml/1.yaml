@@ -1,0 +1,80 @@
+# see http://www.ruanyifeng.com/blog/2016/07/yaml.html
+
+# null
+parent: ~
+
+# 时间采用 ISO8601 格式
+iso8601: 2020-01-01t21:59:43.10-05:00
+
+# 日期采用复合 iso8601 格式的年、月、日表示。
+date: 2020-01-01
+
+# 使用两个感叹号，强制转换数据类型
+e: !!str 123
+f: !!str true
+
+str: 这是一行字符串
+str1: '内容\n字符串'
+str2: "内容\n字符串"
+str3: 'labor''s day'  # => 'labor\'s day'
+
+# 字符串可以写成多行，从第二行开始，必须有一个单空格缩进。换行符会被转为空格。
+str4: 这是一段
+  多行
+  字符串
+
+# 多行字符串可以使用|保留换行符，也可以使用>折叠换行
+this: |
+  Foo
+  Bar
+that: >
+  Foo
+  Bar
+
+# +表示保留文字块末尾的换行，-表示删除字符串末尾的换行。
+s1: |
+  Foo
+
+s2: |+
+  Foo
+
+
+s3: |-
+  Foo
+
+# 字符串之中可以插入 HTML 标记。
+message: |
+
+  <p style="color: red">
+    段落
+  </p>
+
+# &用来建立锚点（defaults），<<表示合并到当前数据，*用来引用锚点。
+defaults: &defaults
+  adapter:  postgres
+  host:     localhost
+
+development:
+  database: myapp_development
+  <<: *defaults
+
+test:
+  database: myapp_test
+  <<: *defaults
+
+test1:
+  - &showell Steve
+  - Clark
+  - Brian
+  - Oren
+  - *showell
+
+test2:
+  -
+    - Cat
+    - Dog
+    - Goldfish
+  -
+    - Cat1
+    - Dog1
+    - Goldfish1
