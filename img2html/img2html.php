@@ -28,10 +28,10 @@ echo '
 <style type="text/css">
 *{margin:0; padding:0}
 .block{
-	width: 1px;
-	height: 1px;
-	font-size: 1px;
-    //line-height: 2px;
+	width: 3px;
+	height: 3px;
+	font-size: 3px;
+    line-height: 5px;
 }
 </style>';
 for ($i = 0; $i < $width; ($i += $widthStep)) {
