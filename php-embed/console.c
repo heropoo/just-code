@@ -7,7 +7,7 @@ int main(int argc, char **argv)
     // php 框架初始化
     php_embed_init(argc, argv);
     file_handle.type = ZEND_HANDLE_FILENAME;
-    file_handle.filename = "my.php";
+    file_handle.filename = "console.php";
 
     // execute script
     php_execute_script(&file_handle);

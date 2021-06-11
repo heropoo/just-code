@@ -14,11 +14,12 @@ CFLAGS = -static -I/usr/src/php-7.2.34 \
 	-Wall -g
 LDFLAGS = -L/usr/local/lib -L/usr/src/php-7.2.34/libs -lphp7 
 
-all:
+
+console:
+	$(CC) -o console console.c $(CFLAGS) $(LDFLAGS)
+
+demo:
 	$(CC) -o demo demo.c $(CFLAGS) $(LDFLAGS)
 
-my:
-	$(CC) -o my my.c $(CFLAGS) $(LDFLAGS)
-
 clean:
-	- rm -rf demo
+	- rm -rf demo console
