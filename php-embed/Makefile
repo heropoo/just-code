@@ -6,7 +6,7 @@ CC = gcc
 # 	-Wall -g
 # LDFLAGS = -L/usr/local/lib -lphp7 
 
-# todo static
+# static
 CFLAGS = -static -I/usr/src/php-7.2.34 \
 	-I/usr/src/php-7.2.34/main \
 	-I/usr/src/php-7.2.34/Zend \
