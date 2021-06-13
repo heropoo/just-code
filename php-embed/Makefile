@@ -1,3 +1,5 @@
+.PHONY: clean
+
 CC = gcc
 # CFLAGS = -I/usr/local/include/php \
 # 	-I/usr/local/include/php/main \
@@ -17,6 +19,10 @@ LDFLAGS = -L/usr/local/lib -L/usr/src/php-7.2.34/libs -lphp7
 
 console:
 	$(CC) -o console console.c $(CFLAGS) $(LDFLAGS)
+
+# Warning: Composer should be invoked via the CLI version of PHP, not the embed SAPI
+# composer:
+#	$(CC) -o composer composer.c $(CFLAGS) $(LDFLAGS)
 
 demo:
 	$(CC) -o demo demo.c $(CFLAGS) $(LDFLAGS)
