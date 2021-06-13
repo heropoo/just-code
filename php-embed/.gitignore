@@ -1,5 +1,4 @@
 demo
 console
-composer.phar
-composer
+*.phar
 vendor/
