@@ -20,28 +20,31 @@ $im = imagerotate($im, $angle, 0);
 $t = $width;
 $width = $height;
 $height = $t;
-$ratio = max($width, $height)*0.15;
+$ratio = max($width, $height)*0.2;
 $widthStep = $width/$ratio;
 $heightStep = $height/$ratio;
-ob_start();
-echo '
+//ob_start();
+$html = '
 <style type="text/css">
-*{margin:0; padding:0}
-.block{
-	width: 3px;
-	height: 3px;
-	font-size: 3px;
-    line-height: 5px;
+#myImg div{margin:0; padding:0}
+#myImg span{margin:0; padding:0}
+#myImg .block{
+	width: 1px;
+	height: 2px;
+	font-size: 2px;
+    line-height: 15px;
 }
-</style>';
+</style><div id="myImg">';
 for ($i = 0; $i < $width; ($i += $widthStep)) {
+    $html .= "<div>";
     for ($j = 0; $j < $height; ($j += $heightStep)) {
         $rgb = ImageColorAt($im, $i, $j);
         $r = ($rgb >> 16) & 0xFF;
         $g = ($rgb >> 8) & 0xFF;
         $b = $rgb & 0xFF;
-        printf('<span class="block" style="color:rgba(%u, %u, %u, %.1f);">▇</span>', $r, $g, $b, $alpha);
+        $html .= sprintf('<span class="block" style="color:rgba(%u, %u, %u, %.1f);">▇</span>', $r, $g, $b, $alpha);
     }
-    echo "<br/>";
+    $html .= "</div>";
 }
-ob_flush();
+$html .=  '</div>';
+echo $html;
