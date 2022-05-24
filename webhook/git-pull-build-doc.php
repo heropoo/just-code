@@ -1,5 +1,5 @@
 <?php
-$log_file = "/tmp/webhook.log";
+$log_file = "/tmp/doc-webhook.log";
 
 error_log("[" . date('Y-m-d H:i:s') . "]" . $raw_body . PHP_EOL, 3, $log_file);
 
